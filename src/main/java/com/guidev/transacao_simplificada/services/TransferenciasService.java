@@ -18,6 +18,7 @@ public class TransferenciasService {
         Usuario recebedor = usuarioService.buscarUsuario(trasacaoDTO.payee());
 
         validaPagadorLojista(pagador);
+        validarSaldoUsuario(pagador, trasacaoDTO.value());
 
     }
 
@@ -25,6 +26,15 @@ public class TransferenciasService {
         try{
             if(usuario.getTipoUsuario().equals(TipoUsuario.LOJISTA)){
                 throw new IllegalArgumentException("Transação não autorizada para esse tipo de usuário");
+            }
+        }catch (Exception e){
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+    private void validarSaldoUsuario(Usuario usuario, BigDecimal valor){
+        try{
+            if (usuario.getCarteira().getSaldo().compareTo(valor) < 0){
+                throw new IllegalArgumentException("Transação não autorizada, saldo insuficiente");
             }
         }catch (Exception e){
             throw new IllegalArgumentException(e.getMessage());
