@@ -13,12 +13,14 @@ import java.math.BigDecimal;
 public class TransferenciasService {
 
     private final UsuarioService usuarioService;
+    private final AutorizacaoService autorizacaoService;
     public void transferirValores(TrasacaoDTO trasacaoDTO){
         Usuario pagador = usuarioService.buscarUsuario(trasacaoDTO.payer());
         Usuario recebedor = usuarioService.buscarUsuario(trasacaoDTO.payee());
 
         validaPagadorLojista(pagador);
         validarSaldoUsuario(pagador, trasacaoDTO.value());
+        validarTransferencia();
 
     }
 
@@ -35,6 +37,15 @@ public class TransferenciasService {
         try{
             if (usuario.getCarteira().getSaldo().compareTo(valor) < 0){
                 throw new IllegalArgumentException("Transação não autorizada, saldo insuficiente");
+            }
+        }catch (Exception e){
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+    private void validarTransferencia(){
+        try{
+            if (!autorizacaoService.validarTransferencia()){
+                throw new IllegalArgumentException("Transação não autorizada pela API");
             }
         }catch (Exception e){
             throw new IllegalArgumentException(e.getMessage());
