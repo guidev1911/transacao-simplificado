@@ -5,6 +5,7 @@ import com.guidev.transacao_simplificada.infrastructure.entities.TipoUsuario;
 import com.guidev.transacao_simplificada.infrastructure.entities.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -14,6 +15,8 @@ public class TransferenciasService {
 
     private final UsuarioService usuarioService;
     private final AutorizacaoService autorizacaoService;
+
+    @Transactional
     public void transferirValores(TrasacaoDTO trasacaoDTO){
         Usuario pagador = usuarioService.buscarUsuario(trasacaoDTO.payer());
         Usuario recebedor = usuarioService.buscarUsuario(trasacaoDTO.payee());
