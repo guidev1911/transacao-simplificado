@@ -25,6 +25,8 @@ public class TransferenciasService {
         validarSaldoUsuario(pagador, trasacaoDTO.value());
         validarTransferencia();
 
+        pagador.getCarteira().setSaldo(pagador.getCarteira().getSaldo().subtract(trasacaoDTO.value()));
+
     }
 
     private void validaPagadorLojista(Usuario usuario){
