@@ -11,7 +11,7 @@ public class CarteiraService {
 
     private final CarteiraRepository repository;
 
-    public void Salvar(Carteira carteira){
+    public void salvar(Carteira carteira){
         repository.save(carteira);
     }
 }

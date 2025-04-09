@@ -1,6 +1,7 @@
 package com.guidev.transacao_simplificada.services;
 
 import com.guidev.transacao_simplificada.controller.TrasacaoDTO;
+import com.guidev.transacao_simplificada.infrastructure.entities.Carteira;
 import com.guidev.transacao_simplificada.infrastructure.entities.TipoUsuario;
 import com.guidev.transacao_simplificada.infrastructure.entities.Usuario;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ public class TransferenciasService {
 
     private final UsuarioService usuarioService;
     private final AutorizacaoService autorizacaoService;
+    private final CarteiraService carteiraService;
 
     @Transactional
     public void transferirValores(TrasacaoDTO trasacaoDTO){
@@ -26,6 +28,7 @@ public class TransferenciasService {
         validarTransferencia();
 
         pagador.getCarteira().setSaldo(pagador.getCarteira().getSaldo().subtract(trasacaoDTO.value()));
+        carteiraService.salvar(pagador.getCarteira());
 
     }
 
@@ -55,6 +58,9 @@ public class TransferenciasService {
         }catch (Exception e){
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+    private void atualizarSaldoCarteira(Carteira carteira){
+        carteiraService.salvar(carteira);
     }
 
 }
