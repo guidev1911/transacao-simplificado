@@ -3,7 +3,9 @@ package com.guidev.transacao_simplificada.services;
 import com.guidev.transacao_simplificada.controller.TrasacaoDTO;
 import com.guidev.transacao_simplificada.infrastructure.entities.Carteira;
 import com.guidev.transacao_simplificada.infrastructure.entities.TipoUsuario;
+import com.guidev.transacao_simplificada.infrastructure.entities.Transacoes;
 import com.guidev.transacao_simplificada.infrastructure.entities.Usuario;
+import com.guidev.transacao_simplificada.infrastructure.repository.TransacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ public class TransferenciasService {
     private final UsuarioService usuarioService;
     private final AutorizacaoService autorizacaoService;
     private final CarteiraService carteiraService;
+    private final TransacaoRepository transacaoRepository;
 
     @Transactional
     public void transferirValores(TrasacaoDTO trasacaoDTO){
@@ -28,8 +31,17 @@ public class TransferenciasService {
         validarTransferencia();
 
         pagador.getCarteira().setSaldo(pagador.getCarteira().getSaldo().subtract(trasacaoDTO.value()));
-        carteiraService.salvar(pagador.getCarteira());
+        atualizarSaldoCarteira(pagador.getCarteira());
+        recebedor.getCarteira().setSaldo(pagador.getCarteira().getSaldo().add(trasacaoDTO.value()));
+        atualizarSaldoCarteira(recebedor.getCarteira());
 
+        Transacoes transacoes = Transacoes.builder()
+                .valor(trasacaoDTO.value())
+                .pagador(pagador)
+                .recebedor(recebedor)
+                .build();
+
+        transacaoRepository.save(transacoes);
     }
 
     private void validaPagadorLojista(Usuario usuario){
