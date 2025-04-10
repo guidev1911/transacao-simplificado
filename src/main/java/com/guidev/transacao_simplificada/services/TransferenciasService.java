@@ -5,10 +5,12 @@ import com.guidev.transacao_simplificada.infrastructure.entities.Carteira;
 import com.guidev.transacao_simplificada.infrastructure.entities.TipoUsuario;
 import com.guidev.transacao_simplificada.infrastructure.entities.Transacoes;
 import com.guidev.transacao_simplificada.infrastructure.entities.Usuario;
+import com.guidev.transacao_simplificada.infrastructure.exceptions.BadRequestException;
 import com.guidev.transacao_simplificada.infrastructure.repository.TransacaoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 
@@ -20,6 +22,7 @@ public class TransferenciasService {
     private final AutorizacaoService autorizacaoService;
     private final CarteiraService carteiraService;
     private final TransacaoRepository transacaoRepository;
+    private final NotificacaoService notificacaoService;
 
     @Transactional
     public void transferirValores(TrasacaoDTO trasacaoDTO){
@@ -42,6 +45,7 @@ public class TransferenciasService {
                 .build();
 
         transacaoRepository.save(transacoes);
+        enviarNotificacao();
     }
 
     private void validaPagadorLojista(Usuario usuario){
@@ -73,6 +77,14 @@ public class TransferenciasService {
     }
     private void atualizarSaldoCarteira(Carteira carteira){
         carteiraService.salvar(carteira);
+    }
+
+    private void enviarNotificacao(){
+        try{
+            notificacaoService.enviarNotificacao();
+        }catch (HttpClientErrorException e){
+            throw new BadRequestException("Erro ao enviar notificação");
+        }
     }
 
 }
