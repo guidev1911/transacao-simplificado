@@ -1,6 +1,6 @@
 package com.guidev.transacao_simplificada.services;
 
-import com.guidev.transacao_simplificada.controller.TrasacaoDTO;
+import com.guidev.transacao_simplificada.controller.TransacaoDTO;
 import com.guidev.transacao_simplificada.infrastructure.entities.Carteira;
 import com.guidev.transacao_simplificada.infrastructure.entities.TipoUsuario;
 import com.guidev.transacao_simplificada.infrastructure.entities.Transacoes;
@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
-public class TransferenciasService {
+public class TransacaoService {
 
     private final UsuarioService usuarioService;
     private final AutorizacaoService autorizacaoService;
@@ -25,7 +25,7 @@ public class TransferenciasService {
     private final NotificacaoService notificacaoService;
 
     @Transactional
-    public void transferirValores(TrasacaoDTO trasacaoDTO){
+    public void transferirValores(TransacaoDTO trasacaoDTO){
         Usuario pagador = usuarioService.buscarUsuario(trasacaoDTO.payer());
         Usuario recebedor = usuarioService.buscarUsuario(trasacaoDTO.payee());
 
